@@ -31,10 +31,11 @@ prediction_single(
 
 \item{evolutionary_conservation}{Numeric evolutionary conservation value.}
 
-\item{DNA_5mer}{A five-base DNA sequence, such as GGACA.}
+\item{DNA_5mer}{A five-base uppercase DNA sequence containing only
+A/T/C/G, with A at the central position, such as GGACA.}
 
-\item{positive_threshold}{Numeric classification threshold; defaults to 0.5.
-Scores strictly greater than this value are classified as Positive.}
+\item{positive_threshold}{A single finite numeric value between 0 and 1;
+defaults to 0.5. Scores strictly greater than this value are Positive.}
 }
 \value{
 A named character vector containing predicted_m6A_prob and
@@ -42,6 +43,10 @@ predicted_m6A_status.
 }
 \description{
 Predict the score and status for one site using a fitted model.
+}
+\details{
+Invalid inputs cause an error. Prediction also stops if the
+model returns a missing or non-finite score.
 }
 \examples{
 ml_fit <- readRDS(system.file("extdata", "rf_fit.rds",

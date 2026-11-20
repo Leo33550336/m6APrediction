@@ -12,10 +12,12 @@ prediction_multiple(ml_fit, feature_df, positive_threshold = 0.5)
 \item{feature_df}{A data frame containing columns gc_content, RNA_type,
 RNA_region, exon_length, distance_to_junction,
 evolutionary_conservation, and DNA_5mer. Length and distance values
-should already be log2-transformed.}
+should already be log2-transformed.
+DNA_5mer values must contain five uppercase A/T/C/G bases with
+A at the central position. Required features must not contain missing values.}
 
-\item{positive_threshold}{Numeric classification threshold; defaults to 0.5.
-Scores strictly greater than this value are classified as Positive.}
+\item{positive_threshold}{A single finite numeric value between 0 and 1;
+defaults to 0.5. Scores strictly greater than this value are Positive.}
 }
 \value{
 The input data frame with predicted_m6A_prob and
@@ -23,6 +25,10 @@ predicted_m6A_status columns added.
 }
 \description{
 Predict scores and statuses for multiple input rows using a fitted model.
+}
+\details{
+Invalid inputs cause an error. Prediction also stops if the
+model returns a missing or non-finite score.
 }
 \examples{
 ml_fit <- readRDS(system.file("extdata", "rf_fit.rds",

@@ -12,6 +12,32 @@ Install the package from GitHub:
 install.packages("remotes")
 remotes::install_github("Leo33550336/m6APrediction")
 ```
+## Input requirements
+
+Batch input must be a non-empty data frame containing these columns:
+
+- `gc_content`: finite numeric GC content.
+- `RNA_type`: `mRNA`, `lincRNA`, `lncRNA`, or `pseudogene`.
+- `RNA_region`: `CDS`, `intron`, `3'UTR`, or `5'UTR`.
+- `exon_length`: finite numeric, already log2-transformed.
+- `distance_to_junction`: finite numeric, already log2-transformed.
+- `evolutionary_conservation`: finite numeric conservation value.
+- `DNA_5mer`: five uppercase A/T/C/G bases with A at the central position.
+
+The supplied example data are already preprocessed. Do not transform their
+length and distance columns again. New inputs must use preprocessing
+consistent with the training data.
+
+Required features must not contain missing values. The classification
+threshold must be a single finite numeric value between 0 and 1.
+Invalid inputs or missing/non-finite prediction scores cause an error.
+
+Batch prediction returns a data frame with numeric scores and character
+statuses. Single-site prediction returns a named character vector, so its
+score is also character. Convert it with `as.numeric()` before arithmetic.
+
+The model is intended for candidate sites centred on A. Performance on
+arbitrary sequences, new species, or other datasets has not been established.
 
 ## Predict multiple sites
 
