@@ -31,6 +31,12 @@ dna_encoding <- function(dna_strings){
 #'   predicted_m6A_status columns added.
 #' @import randomForest
 #' @importFrom stats predict
+#' @details Input must be a non-empty data frame. RNA_type must be mRNA,
+#'   lincRNA, lncRNA, or pseudogene; RNA_region must be CDS, intron,
+#'   3'UTR, or 5'UTR. gc_content, exon_length, distance_to_junction,
+#'   and evolutionary_conservation must contain finite numeric values.
+#'   DNA_5mer may be character or factor. Additional input columns are
+#'   preserved in the output but are not used as model predictors.
 #' @details Invalid inputs cause an error. Prediction also stops if the
 #'   model returns a missing or non-finite score.
 #' @export
@@ -102,7 +108,14 @@ prediction_multiple <- function(ml_fit, feature_df, positive_threshold = 0.5){
                   "evolutionary_conservation", "DNA_5mer") %in% colnames(feature_df))) # Check errors if incorrect column names of input data.frame
   feature_df$RNA_type <- factor(feature_df$RNA_type, levels = c("mRNA", "lincRNA", "lncRNA", "pseudogene"))
   feature_df$RNA_region <- factor(feature_df$RNA_region, levels = c("CDS", "intron", "3'UTR", "5'UTR"))
-  infered_prob <- predict(ml_fit, newdata = cbind(feature_df, dna_encoding(feature_df$DNA_5mer)), type = "prob")
+  model_input <- cbind(
+    feature_df[, setdiff(required, "DNA_5mer"), drop = FALSE],
+    dna_encoding(sequences)
+  )
+
+  infered_prob <- predict(
+    ml_fit, newdata = model_input, type = "prob"
+  )
   feature_df$predicted_m6A_prob <- infered_prob[,"Positive"]
   if (any(!is.finite(feature_df$predicted_m6A_prob))) {
     stop("Prediction produced a missing or non-finite score; no classification returned.")
@@ -129,6 +142,8 @@ prediction_multiple <- function(ml_fit, feature_df, positive_threshold = 0.5){
 #'   defaults to 0.5. Scores strictly greater than this value are Positive.
 #' @return A named character vector containing predicted_m6A_prob and
 #'   predicted_m6A_status.
+#' @details Each site input argument must contain exactly one value.
+#'   Use prediction_multiple() for multiple sites.
 #' @details Invalid inputs cause an error. Prediction also stops if the
 #'   model returns a missing or non-finite score.
 #' @export
@@ -141,6 +156,19 @@ prediction_multiple <- function(ml_fit, feature_df, positive_threshold = 0.5){
 #'                   evolutionary_conservation = 0.8, DNA_5mer = "GGACA")
 prediction_single <- function(ml_fit, gc_content, RNA_type, RNA_region, exon_length,
                               distance_to_junction, evolutionary_conservation, DNA_5mer, positive_threshold = 0.5){
+  site_inputs <- list(
+    gc_content = gc_content,
+    RNA_type = RNA_type,
+    RNA_region = RNA_region,
+    exon_length = exon_length,
+    distance_to_junction = distance_to_junction,
+    evolutionary_conservation = evolutionary_conservation,
+    DNA_5mer = DNA_5mer
+  )
+
+  if (any(lengths(site_inputs) != 1L)) {
+    stop("Each site input must contain exactly one value.")
+  }
   pred_outcome <- prediction_multiple(ml_fit = ml_fit,
                                       data.frame(gc_content = gc_content,
                                                  RNA_type = factor(RNA_type, levels = c("mRNA", "lincRNA", "lncRNA", "pseudogene")),

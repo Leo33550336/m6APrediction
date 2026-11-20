@@ -45,6 +45,9 @@ predicted_m6A_status.
 Predict the score and status for one site using a fitted model.
 }
 \details{
+Each site input argument must contain exactly one value.
+Use prediction_multiple() for multiple sites.
+
 Invalid inputs cause an error. Prediction also stops if the
 model returns a missing or non-finite score.
 }

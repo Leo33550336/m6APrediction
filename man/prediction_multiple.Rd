@@ -27,6 +27,13 @@ predicted_m6A_status columns added.
 Predict scores and statuses for multiple input rows using a fitted model.
 }
 \details{
+Input must be a non-empty data frame. RNA_type must be mRNA,
+lincRNA, lncRNA, or pseudogene; RNA_region must be CDS, intron,
+3'UTR, or 5'UTR. gc_content, exon_length, distance_to_junction,
+and evolutionary_conservation must contain finite numeric values.
+DNA_5mer may be character or factor. Additional input columns are
+preserved in the output but are not used as model predictors.
+
 Invalid inputs cause an error. Prediction also stops if the
 model returns a missing or non-finite score.
 }
