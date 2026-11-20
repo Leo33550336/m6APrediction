@@ -72,3 +72,15 @@ After installing and loading the package, use:
 ?prediction_multiple
 ?prediction_single
 ```
+
+## Scientific context: earlier coursework evaluation
+
+![ROC and precision-recall curves from Practical 3](images/practical3_ROC_PRC.png)
+
+The Practical 3 random forest achieved an AUROC of 0.885 and an
+AUPRC of 0.700 on its held-out test set, containing 2,273 positive
+and 7,338 negative sites. The positive-class prevalence was 0.236.
+
+These results illustrate the potential of feature-based m6A prediction.
+They describe the earlier Practical 3 model and are not an independent
+validation of the model bundled with this package.
